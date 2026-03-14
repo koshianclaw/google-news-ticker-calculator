@@ -1,138 +1,208 @@
 # Google News Ticker Calculator
 
-A GitHub Pages-friendly static web app that combines:
+一個小型雲端可部署 Web App，整合了：
 
-- a **headline list**
-- a scrolling **headline ticker / marquee**
-- a built-in **calculator**
+- **Google News 最新新聞列表**
+- **跑馬燈 headline ticker**
+- **內建計算機**
 
-This version is **pure frontend**: no Node.js server, no Express proxy, no backend runtime.
+這份專案目前同時提供兩種部署方式：
 
-## What changed
+1. **Node / Express 版本**：適合本機或 Render / Railway 之類的傳統 Web Service
+2. **GitHub Pages + Serverless 版本**：前端放 GitHub Pages，新聞 API 放在 Vercel Serverless Function
 
-The original app depended on a local Node/Express backend to fetch Google News RSS and expose `/api/news` to the browser. That works locally, but it does **not** work on GitHub Pages because GitHub Pages can only host static files.
+---
 
-This repo has been converted to a static build that:
-
-- loads news directly in the browser
-- tries public browser-accessible RSS helper services
-- falls back gracefully to cached/local sample headlines if live fetches fail
-- keeps the calculator fully client-side
-
-## Features
-
-- Static site deployable on **GitHub Pages**
-- Latest headline list
-- Scrolling marquee ticker
-- Calculator with mouse + keyboard support
-- Manual refresh button
-- Graceful fallback when live news fetch is blocked
-
-## Project structure
+## 專案結構
 
 ```text
 google-news-ticker-calculator/
-├── app.js
-├── index.html
-├── styles.css
+├── api/
+│   └── news.js              # Vercel serverless API
+├── docs/
+│   ├── app.js               # GitHub Pages 用前端 JS
+│   ├── index.html           # GitHub Pages 入口
+│   └── styles.css           # GitHub Pages 樣式
+├── public/
+│   ├── app.js               # Express 版前端 JS
+│   ├── index.html           # Express 版前端
+│   └── styles.css           # Express 版樣式
+├── .env.example
+├── .gitignore
+├── package.json
 ├── README.md
-└── .gitignore
+├── server.js                # Express 代理伺服器
+└── vercel.json              # Vercel 設定
 ```
 
-## Run locally
+---
 
-Because this is a static app, you can open `index.html` directly or serve the folder with any static file server.
+## 為什麼不能只用 GitHub Pages？
 
-### Simplest
+因為瀏覽器直接抓 Google News 幾乎會遇到 **CORS 限制**。
 
-Open:
+所以實際可行做法是：
 
-```text
-index.html
-```
+- **GitHub Pages**：只放靜態前端
+- **Vercel API**：代替瀏覽器去抓 Google News RSS，再回傳 JSON
 
-### Optional local static server
+這就是這份專案現在提供的 **B 方案**。
 
-Examples:
+---
+
+## 方案 B：GitHub Pages + Vercel Serverless
+
+### Step 1：把 repo 放上 GitHub
+
+建立 repo 後推上去，例如：
 
 ```bash
-python3 -m http.server 8080
+cd /Users/koshianclaw/Desktop/google-news-ticker-calculator
+git remote add origin <YOUR_GITHUB_REPO_URL>
+git push -u origin main
 ```
 
-Then open:
+### Step 2：部署 Serverless API 到 Vercel
+
+Vercel 直接匯入這個 GitHub repo 即可。
+
+Vercel 會自動辨識：
+
+- `api/news.js` → `/api/news`
+
+部署完成後你會拿到像這樣的網址：
 
 ```text
-http://localhost:8080
+https://your-project-name.vercel.app
 ```
 
-## Deploy to GitHub Pages
+可先測：
 
-1. Push this repo to GitHub.
-2. In **Settings → Pages**:
-   - Source: **Deploy from a branch**
-   - Branch: `main`
-   - Folder: `/ (root)`
-3. Save.
+```text
+https://your-project-name.vercel.app/api/news
+```
 
-GitHub Pages will serve the app directly from the repository root.
+如果有回傳 JSON，就代表 API 正常。
 
-## How news loading works
+### Step 3：設定 GitHub Pages 前端要打哪個 API
 
-Default feed target:
+打開：
+
+- `docs/index.html`
+
+找到這段：
+
+```html
+<script>
+  window.APP_CONFIG = {
+    apiBaseUrl: 'https://YOUR-VERCEL-PROJECT.vercel.app'
+  };
+</script>
+```
+
+改成你的 Vercel 網址，例如：
+
+```html
+<script>
+  window.APP_CONFIG = {
+    apiBaseUrl: 'https://your-project-name.vercel.app'
+  };
+</script>
+```
+
+然後 commit + push。
+
+### Step 4：開 GitHub Pages
+
+在 GitHub repo 設定裡：
+
+- Settings
+- Pages
+- Build and deployment
+- Source: **Deploy from a branch**
+- Branch: **main**
+- Folder: **/docs**
+
+完成後 GitHub Pages 會提供網址，例如：
+
+```text
+https://<your-username>.github.io/google-news-ticker-calculator/
+```
+
+這樣前端就會從 GitHub Pages 載入，並呼叫你的 Vercel `/api/news`。
+
+---
+
+## 本機 Express 版本
+
+如果你要本機跑：
+
+```bash
+cd /Users/koshianclaw/Desktop/google-news-ticker-calculator
+npm install
+npm start
+```
+
+打開：
+
+```text
+http://localhost:3000
+```
+
+---
+
+## 可調整的 Google News RSS
+
+預設 RSS：
 
 ```text
 https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en
 ```
 
-The frontend attempts these browser-side sources in order:
+如果要改成台灣區，可在部署平台設定環境變數：
 
-1. `rss2json` API wrapping the Google News RSS feed
-2. `AllOrigins` raw proxy + client-side RSS XML parsing
-
-If both fail, the UI:
-
-- keeps working
-- shows fallback/cached headlines
-- still provides the marquee and calculator
-
-## Tradeoffs / caveats
-
-This is the honest part:
-
-### Why this is not as reliable as the old backend
-
-A frontend-only site cannot safely or consistently fetch Google News RSS directly from the browser because of **CORS restrictions**. Public RSS helper services are the most practical static-only workaround, but they come with tradeoffs:
-
-- they may rate-limit requests
-- they may go down temporarily
-- they may block some regions or networks
-- they are third-party dependencies outside this repo
-
-### What you gain
-
-- zero backend
-- works on GitHub Pages
-- simple deployment
-- no server maintenance
-
-### What you lose
-
-- full control over feed fetching reliability
-- guaranteed availability of live headlines
-- custom secret/config-based server behavior
-
-If you need maximum reliability, a tiny serverless/API proxy would still be the better architecture than pure static hosting.
-
-## Calculator safety note
-
-Calculator evaluation only accepts digits, spaces, parentheses, and math operators:
-
-```text
-+ - * / .
+```bash
+GOOGLE_NEWS_RSS=https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant
 ```
 
-Unsupported input is rejected.
+Vercel / Render 都可以設這個環境變數。
 
-## Suggested repo name
+---
 
-`google-news-ticker-calculator`
+## 注意事項
+
+- Google News RSS 內容是否能順利抓到，會受地區或網路環境影響
+- 前端每 5 秒刷新一次，但實際新聞來源未必每 5 秒都有新內容
+- 計算機只接受基本數學字元：`+ - * / . ( )`
+- 如果 GitHub Pages 顯示有畫面但沒新聞，通常是：
+  - `docs/index.html` 的 `apiBaseUrl` 還沒改
+  - 或 Vercel API 還沒部署成功
+
+---
+
+## 最推薦的部署方式
+
+如果你要的是：
+
+- 程式碼放 GitHub
+- 網頁公開可打開
+- 新聞功能正常
+
+那目前最實際的是：
+
+- **GitHub repo**：存原始碼
+- **GitHub Pages**：前端頁面
+- **Vercel**：serverless API
+
+---
+
+## 快速摘要
+
+### GitHub Pages 前端
+- 使用 `docs/`
+
+### Vercel API
+- 使用 `api/news.js`
+
+### 本機 Node 版
+- 使用 `server.js + public/`
