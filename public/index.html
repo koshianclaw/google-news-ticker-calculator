@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google News Ticker + Calculator</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Live dashboard</p>
+          <h1>Google News Ticker + Calculator</h1>
+          <p class="subtitle">
+            Headlines refresh every 5 seconds through a tiny server-side proxy so the browser avoids CORS trouble.
+          </p>
+        </div>
+        <div class="status-card">
+          <div><span>Status</span><strong id="statusText">Loading…</strong></div>
+          <div><span>Source</span><strong id="sourceText">-</strong></div>
+          <div><span>Updated</span><strong id="updatedText">-</strong></div>
+        </div>
+      </header>
+
+      <section class="ticker-panel card">
+        <div class="panel-title-row">
+          <h2>Headline ticker</h2>
+          <button id="refreshButton" class="refresh-button">Refresh now</button>
+        </div>
+        <div class="ticker-wrap">
+          <div class="ticker-track" id="tickerTrack">Loading latest headlines…</div>
+        </div>
+      </section>
+
+      <main class="grid">
+        <section class="card news-panel">
+          <div class="panel-title-row">
+            <h2>Latest headlines</h2>
+            <span class="pill">Auto refresh: 5s</span>
+          </div>
+          <ul id="newsList" class="news-list">
+            <li class="placeholder">Fetching headlines…</li>
+          </ul>
+        </section>
+
+        <section class="card calculator-panel">
+          <div class="panel-title-row">
+            <h2>Calculator</h2>
+            <button id="clearCalcButton" class="ghost-button">Clear</button>
+          </div>
+
+          <div class="calc-display">
+            <div id="calcExpression" class="calc-expression">0</div>
+            <div id="calcResult" class="calc-result">0</div>
+          </div>
+
+          <div id="calcKeys" class="calc-grid">
+            <button data-action="clear">AC</button>
+            <button data-action="delete">DEL</button>
+            <button data-value="(">(</button>
+            <button data-value=")">)</button>
+
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+            <button data-value="/" class="operator">÷</button>
+
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button data-value="*" class="operator">×</button>
+
+            <button data-value="1">1</button>
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button data-value="-" class="operator">−</button>
+
+            <button data-value="0" class="span-2">0</button>
+            <button data-value=".">.</button>
+            <button data-value="+" class="operator">+</button>
+
+            <button data-action="equals" class="equals span-4">=</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

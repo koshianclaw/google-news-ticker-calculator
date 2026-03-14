@@ -1,0 +1,208 @@
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --panel-soft: #1f2937;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #22c55e;
+  --danger: #f97316;
+  --border: rgba(148, 163, 184, 0.2);
+  --shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1e293b 0%, var(--bg) 45%);
+  color: var(--text);
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+h1, h2 { margin: 0; }
+.subtitle {
+  color: var(--muted);
+  max-width: 720px;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.card, .status-card {
+  background: rgba(17, 24, 39, 0.88);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.status-card {
+  min-width: 260px;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+.status-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+}
+.status-card strong { font-size: 1rem; }
+
+.ticker-panel, .news-panel, .calculator-panel { padding: 20px; }
+.panel-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.refresh-button, .ghost-button, .calc-grid button {
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.refresh-button, .ghost-button {
+  padding: 10px 14px;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #2563eb);
+  font-weight: 700;
+}
+.ghost-button {
+  background: var(--panel-soft);
+  color: var(--text);
+}
+.pill {
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.ticker-wrap {
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  padding: 14px 0;
+}
+
+.ticker-track {
+  white-space: nowrap;
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 26s linear infinite;
+  font-size: 1rem;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1.35fr 0.9fr;
+  gap: 24px;
+}
+
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+.news-item {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+.news-item a {
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.news-item a:hover { color: var(--accent); }
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.placeholder { color: var(--muted); }
+
+.calc-display {
+  background: rgba(15, 23, 42, 0.92);
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  padding: 18px;
+  margin-bottom: 16px;
+  min-height: 110px;
+}
+.calc-expression {
+  color: var(--muted);
+  min-height: 28px;
+  word-break: break-all;
+}
+.calc-result {
+  margin-top: 14px;
+  font-size: 2rem;
+  font-weight: 800;
+  word-break: break-all;
+}
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.calc-grid button {
+  padding: 18px;
+  background: #0f172a;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.calc-grid button:hover {
+  transform: translateY(-1px);
+  background: #1e293b;
+}
+.calc-grid .operator { background: #172554; }
+.calc-grid .equals { background: linear-gradient(135deg, var(--accent-2), #16a34a); }
+.span-2 { grid-column: span 2; }
+.span-4 { grid-column: span 4; }
+
+@media (max-width: 900px) {
+  .hero, .grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .status-card { min-width: auto; }
+}
