@@ -156,13 +156,13 @@ http://localhost:3000
 預設 RSS：
 
 ```text
-https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en
+https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant
 ```
 
-如果要改成台灣區，可在部署平台設定環境變數：
+如果你想改成其他地區，可在部署平台設定環境變數，例如切回美國版：
 
 ```bash
-GOOGLE_NEWS_RSS=https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant
+GOOGLE_NEWS_RSS=https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en
 ```
 
 Vercel / Render 都可以設這個環境變數。

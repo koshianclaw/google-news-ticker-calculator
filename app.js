@@ -11,7 +11,7 @@ const calcResult = document.getElementById('calcResult');
 const calcKeys = document.getElementById('calcKeys');
 const clearCalcButton = document.getElementById('clearCalcButton');
 
-const GOOGLE_NEWS_RSS = 'https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en';
+const GOOGLE_NEWS_RSS = 'https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant';
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 const fallbackItems = [
   {

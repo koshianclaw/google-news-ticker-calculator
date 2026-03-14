@@ -7,7 +7,7 @@ const parser = new Parser({
   }
 });
 
-const GOOGLE_NEWS_RSS = process.env.GOOGLE_NEWS_RSS || 'https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en';
+const GOOGLE_NEWS_RSS = process.env.GOOGLE_NEWS_RSS || 'https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant';
 
 const fallbackItems = [
   {
