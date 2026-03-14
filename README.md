@@ -1,113 +1,138 @@
 # Google News Ticker Calculator
 
-A small self-contained web app that combines:
+A GitHub Pages-friendly static web app that combines:
 
-- a live **Google News headline list**
+- a **headline list**
 - a scrolling **headline ticker / marquee**
 - a built-in **calculator**
 
-The browser does **not** fetch Google News directly, because that is commonly blocked by CORS. Instead, this project uses a tiny Node/Express server as a lightweight proxy that reads the public Google News RSS feed and serves clean JSON to the frontend every 5 seconds.
+This version is **pure frontend**: no Node.js server, no Express proxy, no backend runtime.
+
+## What changed
+
+The original app depended on a local Node/Express backend to fetch Google News RSS and expose `/api/news` to the browser. That works locally, but it does **not** work on GitHub Pages because GitHub Pages can only host static files.
+
+This repo has been converted to a static build that:
+
+- loads news directly in the browser
+- tries public browser-accessible RSS helper services
+- falls back gracefully to cached/local sample headlines if live fetches fail
+- keeps the calculator fully client-side
 
 ## Features
 
-- Auto-refresh headlines every **5 seconds**
+- Static site deployable on **GitHub Pages**
+- Latest headline list
 - Scrolling marquee ticker
-- Clickable latest-news list
 - Calculator with mouse + keyboard support
-- Fallback/cached headlines when feed fetch fails
-- Simple structure, easy to run locally or deploy
+- Manual refresh button
+- Graceful fallback when live news fetch is blocked
 
 ## Project structure
 
 ```text
 google-news-ticker-calculator/
-├── public/
-│   ├── app.js
-│   ├── index.html
-│   └── styles.css
-├── .gitignore
-├── package.json
+├── app.js
+├── index.html
+├── styles.css
 ├── README.md
-└── server.js
+└── .gitignore
 ```
 
-## Requirements
+## Run locally
 
-- Node.js 18+ recommended
-- npm
+Because this is a static app, you can open `index.html` directly or serve the folder with any static file server.
 
-## Local setup
+### Simplest
+
+Open:
+
+```text
+index.html
+```
+
+### Optional local static server
+
+Examples:
 
 ```bash
-cd /Users/koshianclaw/Desktop/google-news-ticker-calculator
-npm install
-npm start
+python3 -m http.server 8080
 ```
 
 Then open:
 
 ```text
-http://localhost:3000
+http://localhost:8080
 ```
 
-## How it works
+## Deploy to GitHub Pages
 
-- Frontend calls `GET /api/news` every 5 seconds.
-- Backend fetches the Google News RSS feed:
-  - default: `https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en`
-- Backend parses RSS and returns JSON.
-- If Google News is temporarily unreachable, the app returns cached or fallback headlines so the UI still works.
+1. Push this repo to GitHub.
+2. In **Settings → Pages**:
+   - Source: **Deploy from a branch**
+   - Branch: `main`
+   - Folder: `/ (root)`
+3. Save.
 
-## Change the feed / locale
+GitHub Pages will serve the app directly from the repository root.
 
-You can point the server at a different Google News RSS URL:
+## How news loading works
 
-```bash
-GOOGLE_NEWS_RSS="https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant" npm start
+Default feed target:
+
+```text
+https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en
 ```
 
-## Deployment options
+The frontend attempts these browser-side sources in order:
 
-### Option 1: Run as a normal Node app
+1. `rss2json` API wrapping the Google News RSS feed
+2. `AllOrigins` raw proxy + client-side RSS XML parsing
 
-Works well on:
-- Render
-- Railway
-- Fly.io
-- a VPS
-- your own server
+If both fail, the UI:
 
-Typical deploy command:
+- keeps working
+- shows fallback/cached headlines
+- still provides the marquee and calculator
 
-```bash
-npm install
-npm start
+## Tradeoffs / caveats
+
+This is the honest part:
+
+### Why this is not as reliable as the old backend
+
+A frontend-only site cannot safely or consistently fetch Google News RSS directly from the browser because of **CORS restrictions**. Public RSS helper services are the most practical static-only workaround, but they come with tradeoffs:
+
+- they may rate-limit requests
+- they may go down temporarily
+- they may block some regions or networks
+- they are third-party dependencies outside this repo
+
+### What you gain
+
+- zero backend
+- works on GitHub Pages
+- simple deployment
+- no server maintenance
+
+### What you lose
+
+- full control over feed fetching reliability
+- guaranteed availability of live headlines
+- custom secret/config-based server behavior
+
+If you need maximum reliability, a tiny serverless/API proxy would still be the better architecture than pure static hosting.
+
+## Calculator safety note
+
+Calculator evaluation only accepts digits, spaces, parentheses, and math operators:
+
+```text
++ - * / .
 ```
 
-### Option 2: Docker / reverse proxy setup
-
-Not included here because the app is intentionally kept minimal, but it is straightforward to wrap this Node server behind Nginx/Caddy.
-
-## Why a server proxy is included
-
-Directly fetching Google News from browser JavaScript is unreliable due to cross-origin restrictions. This project avoids that by doing the fetch server-side, which is the practical browser-safe solution.
-
-## Caveats
-
-- Google News RSS availability can vary by region/network.
-- Headlines update every 5 seconds in the UI, but actual feed content may not change that frequently.
-- Calculator evaluation accepts only digits, spaces, parentheses, and math operators `+ - * / .`.
+Unsupported input is rejected.
 
 ## Suggested repo name
 
 `google-news-ticker-calculator`
-
-## Quick start summary
-
-```bash
-cd /Users/koshianclaw/Desktop/google-news-ticker-calculator
-npm install
-npm start
-```
-
-Open `http://localhost:3000`

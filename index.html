@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Static Google News ticker, headline list, and calculator for GitHub Pages." />
     <title>Google News Ticker + Calculator</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -10,10 +11,11 @@
     <div class="app-shell">
       <header class="hero">
         <div>
-          <p class="eyebrow">Live dashboard</p>
+          <p class="eyebrow">Static dashboard</p>
           <h1>Google News Ticker + Calculator</h1>
           <p class="subtitle">
-            Headlines refresh every 5 seconds through a tiny server-side proxy so the browser avoids CORS trouble.
+            Pure frontend build for GitHub Pages. Headlines are loaded in-browser from public RSS proxy services when available,
+            with graceful fallback when external endpoints are blocked or rate-limited.
           </p>
         </div>
         <div class="status-card">
@@ -26,7 +28,10 @@
       <section class="ticker-panel card">
         <div class="panel-title-row">
           <h2>Headline ticker</h2>
-          <button id="refreshButton" class="refresh-button">Refresh now</button>
+          <div class="button-row">
+            <button id="toggleTickerButton" class="ghost-button">Pause ticker</button>
+            <button id="refreshButton" class="refresh-button">Refresh now</button>
+          </div>
         </div>
         <div class="ticker-wrap">
           <div class="ticker-track" id="tickerTrack">Loading latest headlines…</div>
@@ -35,9 +40,12 @@
 
       <main class="grid">
         <section class="card news-panel">
-          <div class="panel-title-row">
-            <h2>Latest headlines</h2>
-            <span class="pill">Auto refresh: 5s</span>
+          <div class="panel-title-row panel-wrap">
+            <div>
+              <h2>Latest headlines</h2>
+              <p class="panel-note">Default feed: Google News US English RSS</p>
+            </div>
+            <span class="pill">Auto refresh: 5 min</span>
           </div>
           <ul id="newsList" class="news-list">
             <li class="placeholder">Fetching headlines…</li>
